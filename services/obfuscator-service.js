@@ -1,276 +1,324 @@
-// Hard Obfuscator Service
+// STRONG RUNNABLE OBFUSCATOR SERVICE
 const OBFUSCATION_PATTERN = '素晴座素晴難CODEBREAKER素晴座素晴難';
 
-class HardObfuscator {
+class StrongRunnableObfuscator {
     constructor() {
         this.pattern = OBFUSCATION_PATTERN;
-        this.patternChars = this.pattern.split('');
+        this.patternParts = ['素晴座', '素晴難', 'CODEBREAKER'];
+        this.variableNames = this.generateVariableNames();
     }
     
-    // Main obfuscation function
+    generateVariableNames() {
+        // Generate confusing variable names using your pattern
+        return [
+            '素晴座_1', '素晴難_2', 'CODEBREAKER_3', '素晴座_4', '素晴難_5',
+            '_素晴座', '_素晴難', '_CODEBREAKER', '素晴座素晴難', 'CODEBREAKER素晴座'
+        ];
+    }
+    
     obfuscate(code) {
-        if (!code || code.trim() === '') return '';
+        if (!code.trim()) return '';
         
-        // Step 1: Minify the code
-        let minified = this.minify(code);
+        // Step 1: Parse and transform
+        let transformed = this.transformCode(code);
         
-        // Step 2: Convert to base64
-        let base64 = btoa(unescape(encodeURIComponent(minified)));
+        // Step 2: Add multiple protection layers
+        let protected = this.addProtectionLayers(transformed);
         
-        // Step 3: Split and inject pattern
-        let chunks = [];
-        for (let i = 0; i < base64.length; i += 3) {
-            let chunk = base64.substr(i, 3);
-            
-            // Inject pattern characters randomly
-            if (Math.random() > 0.7) {
-                let patternChar = this.patternChars[Math.floor(Math.random() * this.patternChars.length)];
-                chunk = patternChar + chunk;
-            }
-            
-            // Randomly add pattern as whole
-            if (Math.random() > 0.9) {
-                chunk = this.pattern.substr(0, Math.floor(Math.random() * this.pattern.length)) + chunk;
-            }
-            
-            chunks.push(chunk);
+        // Step 3: Wrap in executor
+        let final = this.wrapInExecutor(protected);
+        
+        // Step 4: Add headers/footers
+        return this.addMetadata(final);
+    }
+    
+    transformCode(code) {
+        // Transform variable names
+        let vars = this.extractVariables(code);
+        let varMap = this.createVariableMap(vars);
+        
+        // Replace variables with confusing names
+        let transformed = code;
+        Object.keys(varMap).forEach((varName, index) => {
+            let newName = this.variableNames[index % this.variableNames.length];
+            let regex = new RegExp(`\\b${varName}\\b`, 'g');
+            transformed = transformed.replace(regex, newName);
+        });
+        
+        // Add dead code with pattern
+        transformed = this.addDeadCode(transformed);
+        
+        // String encryption
+        transformed = this.encryptStrings(transformed);
+        
+        // Control flow obfuscation
+        transformed = this.obfuscateControlFlow(transformed);
+        
+        return transformed;
+    }
+    
+    extractVariables(code) {
+        // Extract variable names from code
+        let varRegex = /\b(var|let|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+        let funcRegex = /\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+        let paramRegex = /function[^(]*\(([^)]*)\)/g;
+        
+        let variables = new Set();
+        let match;
+        
+        while ((match = varRegex.exec(code)) !== null) {
+            variables.add(match[2]);
         }
         
-        // Step 4: Create scrambled result
-        let scrambled = chunks.join('');
+        while ((match = funcRegex.exec(code)) !== null) {
+            variables.add(match[1]);
+        }
         
-        // Step 5: Add watermark multiple times
-        let result = '';
-        let lines = scrambled.split('\n');
+        while ((match = paramRegex.exec(code)) !== null) {
+            match[1].split(',').forEach(param => {
+                let trimmed = param.trim().split('=')[0].trim();
+                if (trimmed) variables.add(trimmed);
+            });
+        }
+        
+        return Array.from(variables);
+    }
+    
+    createVariableMap(variables) {
+        let map = {};
+        variables.forEach((v, i) => {
+            map[v] = this.variableNames[i % this.variableNames.length];
+        });
+        return map;
+    }
+    
+    addDeadCode(code) {
+        let deadCode = `
+            /* 素晴座 DEAD CODE START 素晴座 */
+            var ${this.variableNames[0]} = "${this.pattern}";
+            var ${this.variableNames[1]} = function() {
+                return "${this.pattern}".split('').reverse().join('');
+            };
+            try {
+                ${this.variableNames[2]} = (function() {
+                    var ${this.variableNames[3]} = "${this.pattern.substr(0, 5)}";
+                    var ${this.variableNames[4]} = "${this.pattern.substr(5, 5)}";
+                    return ${this.variableNames[3]} + ${this.variableNames[4]};
+                })();
+            } catch(${this.variableNames[5]}) {
+                // 素晴難 IGNORE 素晴難
+            }
+            /* CODEBREAKER DEAD CODE END CODEBREAKER */
+        `;
+        
+        return deadCode + '\n\n' + code;
+    }
+    
+    encryptStrings(code) {
+        // Find all strings in code
+        let stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+        let strings = code.match(stringRegex) || [];
+        
+        strings.forEach(str => {
+            if (str.length < 3) return; // Skip very short strings
+            
+            let cleanStr = str.substring(1, str.length - 1);
+            let encrypted = this.encryptString(cleanStr);
+            let replacement = `((function(){${encrypted}})())`;
+            
+            code = code.replace(str, replacement);
+        });
+        
+        return code;
+    }
+    
+    encryptString(str) {
+        // Encrypt string using pattern
+        let chars = str.split('');
+        let encrypted = chars.map((char, i) => {
+            let patternChar = this.pattern.charCodeAt(i % this.pattern.length);
+            let charCode = char.charCodeAt(0);
+            let encryptedCode = charCode ^ (patternChar % 256);
+            return `String.fromCharCode(${encryptedCode}^${patternChar % 256})`;
+        }).join('+');
+        
+        return `return ${encrypted}`;
+    }
+    
+    obfuscateControlFlow(code) {
+        // Convert if/else to ternary and other obfuscations
+        code = code.replace(/if\s*\(([^)]+)\)\s*{([^}]+)}/g, 
+            (match, condition, body) => {
+                return `(${condition.trim()})?${this.obfuscateControlFlow(body)}:null`;
+            });
+        
+        // Add fake switches
+        let lines = code.split('\n');
+        let result = [];
         
         for (let i = 0; i < lines.length; i++) {
-            result += lines[i];
+            result.push(lines[i]);
             
-            // Add pattern every few lines
-            if (i % 2 === 0 && i > 0) {
-                let randomPart = this.pattern.substr(
-                    Math.floor(Math.random() * (this.pattern.length - 5)), 
-                    3 + Math.floor(Math.random() * 3)
-                );
-                result += randomPart;
+            // Randomly insert pattern checks
+            if (Math.random() > 0.7) {
+                result.push(`/*${this.pattern.substr(Math.floor(Math.random() * 5), 3)}*/`);
             }
-            
-            // Add full pattern every 5 lines
-            if (i % 5 === 0 && i > 0) {
-                result += this.pattern;
-            }
-            
-            // Add watermark comment
-            if (i % 3 === 0) {
-                result += '/*' + this.getRandomWatermark() + '*/';
-            }
-            
-            result += '\n';
         }
         
-        // Step 6: Final encoding
-        result = this.encodeString(result);
-        
-        // Add header and footer
-        return `/* DARK EMPIRE PANEL OBFUSCATION */\n` +
-               `/* PATTERN: ${this.pattern} */\n` +
-               `/* OBFUSCATED ${new Date().toISOString()} */\n\n` +
-               result + 
-               `\n\n/* BY CODEBREAKER */\n` +
-               `/* END OBFUSCATION */`;
+        return result.join('\n');
     }
     
-    // Deobfuscation function
-    deobfuscate(obfuscated) {
-        try {
-            // Remove header and footer
-            let clean = obfuscated
-                .replace(/\/\* DARK EMPIRE PANEL OBFUSCATION \*\//g, '')
-                .replace(/\/\* PATTERN: .*? \*\//g, '')
-                .replace(/\/\* OBFUSCATED .*? \*\//g, '')
-                .replace(/\/\* BY CODEBREAKER \*\//g, '')
-                .replace(/\/\* END OBFUSCATION \*\//g, '')
-                .replace(/\/\*素晴座素晴難CODEBREAKER素晴座素晴難\*\//g, '');
+    addProtectionLayers(code) {
+        // Add multiple protective layers
+        let protectedCode = `
+        /* 素晴座 PROTECTION LAYER 1 素晴座 */
+        (function() {
+            var 素晴座_guard = "${this.pattern}";
+            if (typeof 素晴座_guard !== "string") return;
             
-            // Remove all instances of the pattern
-            let patternRegex = new RegExp(this.pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-            clean = clean.replace(patternRegex, '');
+            /* 素晴難 PROTECTION LAYER 2 素晴難 */
+            var CODEBREAKER_check = function() {
+                return 素晴座_guard.length === ${this.pattern.length};
+            };
+            if (!CODEBREAKER_check()) return;
             
-            // Remove partial patterns
-            let partialPattern = /素晴座|素晴難|CODEBREAKER/g;
-            clean = clean.replace(partialPattern, '');
-            
-            // Decode the string
-            clean = this.decodeString(clean);
-            
-            // Extract base64 (remove comments and random chars)
-            let base64Match = clean.match(/[A-Za-z0-9+/]+={0,2}/);
-            if (!base64Match) throw new Error('Invalid obfuscated code');
-            
-            let base64 = base64Match[0];
-            
-            // Convert from base64
+            /* DARK EMPIRE EXECUTION WRAPPER */
             try {
-                let decoded = decodeURIComponent(escape(atob(base64)));
-                return this.formatCode(decoded);
-            } catch (e) {
-                // Try alternative decoding
-                return this.alternativeDecode(clean);
+                ${code}
+            } catch(素晴座_error) {
+                console.error("素晴座素晴難ERROR素晴座素晴難", 素晴座_error);
             }
-            
-        } catch (error) {
-            return `/* Deobfuscation Failed */\n/* Error: ${error.message} */\n\n` + 
-                   `/* This code was obfuscated with DARK EMPIRE PATTERN */\n` +
-                   `/* Pattern: ${this.pattern} */`;
-        }
+        })();
+        `;
+        
+        return protectedCode;
     }
     
-    // Helper functions
+    wrapInExecutor(code) {
+        // Wrap in self-executing function with anti-debug
+        return `
+        /* 素晴座 ANTI-DEBUG START 素晴座 */
+        (function() {
+            var ${this.variableNames[6]} = "${this.pattern}";
+            var ${this.variableNames[7]} = new Date().getTime();
+            
+            // Anti-tampering check
+            if (${this.variableNames[6]}.split('素晴座').length !== 3) {
+                throw new Error("素晴座 TAMPER DETECTED 素晴座");
+            }
+            
+            // Debugger protection
+            var ${this.variableNames[8]} = function() {
+                var ${this.variableNames[9]} = 0;
+                while(${this.variableNames[9]} < 1000000) {
+                    ${this.variableNames[9]}++;
+                    if (${this.variableNames[9]} % 100000 === 0) {
+                        if (${this.variableNames[6]}[${this.variableNames[9]} % ${this.variableNames[6]}.length] !== "${this.pattern[0]}") {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            };
+            
+            // Main execution
+            ${code}
+            
+            /* 素晴難 EXECUTION COMPLETE 素晴難 */
+        })();
+        `;
+    }
+    
+    addMetadata(code) {
+        let header = `/*\n`;
+        header += ` * DARK EMPIRE PANEL - STRONG OBFUSCATION\n`;
+        header += ` * OBFUSCATED: ${new Date().toISOString()}\n`;
+        header += ` * PATTERN: ${this.pattern}\n`;
+        header += ` * PROTECTION: MULTI-LAYER RUNTIME\n`;
+        header += ` */\n\n`;
+        
+        let footer = `\n\n/*\n`;
+        footer += ` * BY CODEBREAKER\n`;
+        footer += ` * 素晴座素晴難CODEBREAKER素晴座素晴難\n`;
+        footer += ` * DO NOT DECOMPILE\n`;
+        footer += ` */`;
+        
+        return header + code + footer;
+    }
+    
     minify(code) {
-        // Simple minification
         return code
-            .replace(/\/\/.*$/gm, '') // Remove single line comments
-            .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-            .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-            .replace(/\s*([=+\-*\/%&|^!><?:{},;()])\s*/g, '$1') // Remove spaces around operators
+            .replace(/\/\/.*$/gm, '')
+            .replace(/\/\*[\s\S]*?\*\//g, '')
+            .replace(/\s+/g, ' ')
+            .replace(/\s*([=+\-*\/%&|^!><?:{},;()])\s*/g, '$1')
             .trim();
     }
     
-    encodeString(str) {
-        // Simple encoding - you can make this more complex
-        let encoded = '';
-        for (let i = 0; i < str.length; i++) {
-            let charCode = str.charCodeAt(i);
-            
-            // Mix with pattern character codes
-            if (i < this.pattern.length) {
-                let patternCode = this.pattern.charCodeAt(i % this.pattern.length);
-                charCode = charCode ^ (patternCode % 256);
-            }
-            
-            // Add random offset
-            charCode = (charCode + 13) % 65536;
-            
-            // Convert to hex with pattern mixed in
-            let hex = charCode.toString(16).padStart(4, '0');
-            
-            // Occasionally insert pattern characters
-            if (Math.random() > 0.8) {
-                let patternIndex = Math.floor(Math.random() * this.pattern.length);
-                hex = hex.substr(0, 2) + this.pattern[patternIndex] + hex.substr(2);
-            }
-            
-            encoded += hex + ' ';
-        }
-        return encoded;
-    }
-    
-    decodeString(encoded) {
-        // Simple decoding
-        let decoded = '';
-        let hexValues = encoded.match(/.{1,6}/g) || [];
-        
-        for (let hex of hexValues) {
-            // Remove pattern characters from hex
-            let cleanHex = hex.replace(/[^0-9a-f]/gi, '');
-            if (cleanHex.length === 4) {
-                let charCode = parseInt(cleanHex, 16);
-                charCode = (charCode - 13 + 65536) % 65536;
-                
-                // Reverse XOR with pattern
-                if (decoded.length < this.pattern.length) {
-                    let patternCode = this.pattern.charCodeAt(decoded.length % this.pattern.length);
-                    charCode = charCode ^ (patternCode % 256);
-                }
-                
-                decoded += String.fromCharCode(charCode);
-            }
-        }
-        
-        return decoded;
-    }
-    
-    getRandomWatermark() {
-        const watermarks = [
-            'BY CODEBREAKER',
-            'DARK EMPIRE TECH',
-            '素晴座CODEBREAKER素晴座',
-            'ENCRYPTED BY DARK EMPIRE',
-            '素晴難PROTECTED素晴難',
-            'SECURED WITH CODEBREAKER TECH',
-            '素晴座素晴難ENCRYPTED素晴座素晴難'
-        ];
-        return watermarks[Math.floor(Math.random() * watermarks.length)];
-    }
-    
-    alternativeDecode(str) {
-        // Alternative decoding method
+    // Deobfuscation (simplified)
+    deobfuscate(obfuscated) {
         try {
-            // Extract all hex values
-            let hexMatches = str.match(/[0-9a-f]{4}/gi) || [];
-            let decoded = '';
+            // Remove metadata
+            let clean = obfuscated
+                .replace(/\/\*[\s\S]*?\*\//g, '')
+                .replace(new RegExp(this.pattern, 'g'), '')
+                .replace(/素晴座|素晴難|CODEBREAKER/g, '');
             
-            for (let hex of hexMatches) {
-                let charCode = parseInt(hex, 16);
-                if (charCode >= 32 && charCode <= 126) {
-                    decoded += String.fromCharCode(charCode);
-                }
-            }
+            // Basic cleanup
+            clean = clean
+                .replace(/\s+/g, ' ')
+                .replace(/;+/g, ';')
+                .trim();
             
-            return decoded;
-        } catch (e) {
-            return `/* Unable to fully deobfuscate */\n/* Pattern detected: ${this.pattern} */`;
+            return clean;
+        } catch (error) {
+            return `/* Deobfuscation failed: ${error.message} */`;
         }
-    }
-    
-    formatCode(code) {
-        // Basic formatting
-        return code
-            .replace(/\{/g, '{\n  ')
-            .replace(/\}/g, '\n}\n')
-            .replace(/;/g, ';\n  ')
-            .replace(/\n\s*\n/g, '\n');
     }
 }
 
 // Create instance
-const obfuscator = new HardObfuscator();
+const obfuscator = new StrongRunnableObfuscator();
 
-// Handle Obfuscate button click
+// Handle Obfuscate
 function handleObfuscate() {
     const code = document.getElementById('code-input').value;
     const resultBox = document.getElementById('code-result');
     
     if (!code.trim()) {
-        alert('Please enter code to obfuscate!');
+        alert('Enter code to obfuscate!');
         return;
     }
     
-    resultBox.innerHTML = '<div style="color: var(--accent);">🔐 OBFUSCATING WITH DARK EMPIRE TECH...</div>';
+    resultBox.innerHTML = '<div style="color: var(--accent);">🔐 APPLYING STRONG OBFUSCATION...</div>';
     resultBox.classList.remove('hidden');
     
-    // Process
     setTimeout(() => {
         try {
             const obfuscated = obfuscator.obfuscate(code);
             resultBox.textContent = obfuscated;
             
-            // Add copy button
-            addCopyButton(resultBox, obfuscated);
+            // Test if it runs
+            try {
+                eval(obfuscated);
+                resultBox.innerHTML += '\n\n<div style="color: var(--success); margin-top: 10px;">✅ OBFUSCATED CODE IS RUNNABLE</div>';
+            } catch (e) {
+                resultBox.innerHTML += `\n\n<div style="color: var(--danger); margin-top: 10px;">⚠️ Execution test failed: ${e.message}</div>`;
+            }
             
         } catch (error) {
             resultBox.textContent = `Error: ${error.message}`;
         }
-    }, 500);
+    }, 1000);
 }
 
-// Handle Deobfuscate button click
+// Handle Deobfuscate
 function handleDeobfuscate() {
     const code = document.getElementById('code-input').value;
     const resultBox = document.getElementById('code-result');
     
     if (!code.trim()) {
-        alert('Please enter code to deobfuscate!');
+        alert('Enter code to deobfuscate!');
         return;
     }
     
@@ -281,32 +329,13 @@ function handleDeobfuscate() {
         try {
             const deobfuscated = obfuscator.deobfuscate(code);
             resultBox.textContent = deobfuscated;
-            
-            // Add copy button
-            addCopyButton(resultBox, deobfuscated);
-            
         } catch (error) {
-            resultBox.textContent = `Error: ${error.message}\n\nThis code may not be obfuscated with DARK EMPIRE pattern.`;
+            resultBox.textContent = `Error: ${error.message}`;
         }
     }, 500);
 }
 
-// Add copy button to result
-function addCopyButton(container, text) {
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'btn btn-primary';
-    copyBtn.style.marginTop = '10px';
-    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Result';
-    copyBtn.onclick = () => {
-        navigator.clipboard.writeText(text)
-            .then(() => alert('Copied to clipboard!'))
-            .catch(err => console.error('Copy failed:', err));
-    };
-    
-    container.appendChild(copyBtn);
-}
-
-// Copy function for the main copy button
+// Copy function
 function copyResult() {
     const resultBox = document.getElementById('code-result');
     if (resultBox.classList.contains('hidden')) {
@@ -314,14 +343,8 @@ function copyResult() {
         return;
     }
     
-    // Extract text without the copy button text
-    const text = resultBox.textContent.replace('Copy Result', '').trim();
-    
+    const text = resultBox.textContent;
     navigator.clipboard.writeText(text)
-        .then(() => {
-            alert('Code copied to clipboard!');
-        })
-        .catch(err => {
-            console.error('Failed to copy:', err);
-        });
+        .then(() => alert('Copied to clipboard!'))
+        .catch(err => console.error('Copy failed:', err));
 }
