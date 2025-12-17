@@ -1,0 +1,92 @@
+{
+  "bot_name": "DARK EMPIRE TECH PANEL",
+  "owner": "@darkempdev",
+  "github": "RedzAdmin",
+  "panel_url": "http://darkempiretech.duckdns.org",
+  "payment_methods": {
+    "firstbank": "Bank: First Bank\nAccount: 3225456249\nName: Mbaneme Wealth Chukuwemeka",
+    "opay": "Opay: 7030626048\nName: Comfort Chinweokwu Mbaneme",
+    "btc": "BTC: bc1qj5w2stjeqapjqfqcyjqlvfuf4ah4j0rngh0l27",
+    "usdt_trc20": "USDT TRC20: TQrbLisGMJR8BMDF3chJaBL5k4tCZf3jmi",
+    "sol": "SOL: 8ovw3yh5Jbmp4UbPr8DSKwX9mXpmH9j7G3kvChqFSeBJ"
+  },
+  "server_plans": {
+    "free": {
+      "ram": 512,
+      "disk": 1024,
+      "cpu": 100,
+      "expiry_hours": 24,
+      "price": "FREE"
+    },
+    "1gb": {
+      "ram": 1024,
+      "disk": 2048,
+      "cpu": 200,
+      "expiry_days": 30,
+      "price": "₦1,500"
+    },
+    "2gb": {
+      "ram": 2048,
+      "disk": 4096,
+      "cpu": 300,
+      "expiry_days": 30,
+      "price": "₦2,500"
+    },
+    "4gb": {
+      "ram": 4096,
+      "disk": 8192,
+      "cpu": 400,
+      "expiry_days": 30,
+      "price": "₦3,000"
+    },
+    "5gb": {
+      "ram": 5120,
+      "disk": 10240,
+      "cpu": 500,
+      "expiry_days": 30,
+      "price": "₦4,000"
+    },
+    "6gb": {
+      "ram": 6144,
+      "disk": 12288,
+      "cpu": 600,
+      "expiry_days": 30,
+      "price": "₦5,000"
+    },
+    "7gb": {
+      "ram": 7168,
+      "disk": 14336,
+      "cpu": 700,
+      "expiry_days": 30,
+      "price": "₦6,000"
+    },
+    "8gb": {
+      "ram": 8192,
+      "disk": 16384,
+      "cpu": 800,
+      "expiry_days": 30,
+      "price": "₦7,000"
+    },
+    "9gb": {
+      "ram": 9216,
+      "disk": 18432,
+      "cpu": 900,
+      "expiry_days": 30,
+      "price": "₦8,000"
+    },
+    "10gb": {
+      "ram": 10240,
+      "disk": 20480,
+      "cpu": 1000,
+      "expiry_days": 30,
+      "price": "₦9,000"
+    },
+    "admin": {
+      "ram": 15360,
+      "disk": 30720,
+      "cpu": 1500,
+      "expiry_days": 99999,
+      "price": "ADMIN"
+    }
+  }
+}
